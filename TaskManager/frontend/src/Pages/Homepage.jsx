@@ -1,12 +1,15 @@
 import { useState,useEffect } from "react"
-import {AiOutlineEdit} from "react-icons/ai"
+import {AiOutlineEdit,AiOutlineCheckCircle} from "react-icons/ai"
 import {TiDeleteOutline} from "react-icons/ti"
+import {useNavigate} from "react-router-dom"
 const Homepage=()=>{
 
     const [task,setTask]=useState("")
     const [fetchFromDB,setFetchFromDB]=useState(true)
     const [data,setData]=useState([])
     const [loading,setLoading]=useState(false)
+    const navigate = useNavigate()
+
 
     const submitToDB = async(data)=>{
         setLoading(true)
@@ -28,15 +31,16 @@ const Homepage=()=>{
     const deleteFromDB=async(id)=>{
         try {
             const response = await fetch(`http://127.0.0.1:4500/${id}`,{
-                method:"DELETE"
+                method:"DELETE",
             })
             const res = await response.json()
-            console.log(res)
             setFetchFromDB(!fetchFromDB)
         } catch (error) {
             console.log(error.message)
         }
     }
+
+   
 
     useEffect(()=>{
         const fetchData = async()=>{
@@ -59,21 +63,29 @@ const Homepage=()=>{
                     <div className="rounded-lg overflow-hidden flex">
                         <input onChange={(e)=>{
                             setTask(e.target.value)
-                        }} className="bg-gray-200 p-2" placeholder="eg. Wash Dishes" type="text" />
-                        <button onClick={()=>submitToDB(task)} className="text-sm bg-purple-600 hover:bg-purple-400 text-white  p-2">{loading?"Loading..":"Submit"}</button>
+                        }} value={task} className="bg-gray-200 p-2" placeholder="eg. Wash Dishes" type="text" />
+                        <button onClick={()=>{
+                            submitToDB(task)
+                            setTask("")
+                        }} className="text-sm bg-purple-600 hover:bg-purple-400 text-white  p-2">{loading?"Loading..":"Submit"}</button>
                     </div>
                 </div>
             </div>
             <div className="mt-[20px]">
                 {
-                    data.map(item=>{
+                    data&&data.map(item=>{
                         return(
                             <div className="bg-white flex items-center justify-between p-2 w-100 mt-2 shadow-md" key={item._id}>
-                                <p>
-                                    {item.data}
-                                </p>
+                                <div className="flex items-center">
+                                    {item.completed&&<AiOutlineCheckCircle className="m-1"/>}
+                                    <p>
+                                        {item.data}
+                                    </p>
+                                </div>
                                 <div className="p-1 flex space-x-2">
-                                    <AiOutlineEdit className="text-green-600"/>
+                                    <AiOutlineEdit className="text-green-600" onClick={()=>{
+                                        navigate(`/edit/${item._id}`)
+                                    }}/>
                                     <TiDeleteOutline onClick={()=>{
                                         deleteFromDB(item._id)
                                     }} className="text-red-500 cursor-pointer"/>

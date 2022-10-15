@@ -7,7 +7,7 @@ function App() {
       <div style={{height:"100vh"}} className="App flex justify-center items-center ">
         <Routes>
           <Route path="/" element={<Homepage/>}/>
-          <Route path="/edit" element={<Editpage/>}/>
+          <Route path="/edit/:id" element={<Editpage/>}/>
         </Routes>
       </div>
     </Router>
